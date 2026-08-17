@@ -165,4 +165,11 @@ docker run -d --rm -p 8080:8080 \
 # Check health
 curl http://localhost:8080/health
 # Send test image for prediction
-curl -X POST http://localhost:8080/predict -F "image=@test_horse_image.jpeg"
+curl -X POST http://localhost:8080/predict -F "image=@test_image.jpeg"
+
+```
+## Part D: Kubernetes Training Job
+
+```plaintext
+now Part C tested successfully , let's do the Part D. 
+```
