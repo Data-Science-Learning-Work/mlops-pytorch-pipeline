@@ -24,6 +24,7 @@ By completing this assignment, you will be able to:
 mlops-pytorch-pipeline/
 ├── README.md
 ├── .gitignore
+├── .dockerignore
 ├── .github/
 │   └── workflows/
 │       └── ci.yml
@@ -50,9 +51,7 @@ mlops-pytorch-pipeline/
 └── tests/
 │     └── test_model.py
 ├── utility/
-│   ├── logging.py
 │   └── setup.py
-
 ```
 
 ##  🚀 Quick Start
