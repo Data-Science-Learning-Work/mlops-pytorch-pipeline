@@ -1,5 +1,11 @@
 ## Assignment2: Deploying PyTorch ML Workloads with Docker & Kubernetes
 
+``` bash
+# details
+name : Amardeep Kumar
+roll_no : DA25M502
+```
+
 ## 🎯 Overview
 In this assignment, you will take a PyTorch image classification model through the full deployment lifecycle: from local development with proper Git workflows, to containerized training with Docker, to orchestrated deployment on Kubernetes. By the end, you will have a production-style ML pipeline that can train and serve predictions at scale.
 
@@ -18,12 +24,16 @@ By completing this assignment, you will be able to:
 - A Kubernetes cluster (Minikube, kind, or a cloud-managed cluster)
 - A GitHub account
 
+## Part A: Repository Setup
+
 ## 🛠️ Repository Architecture
 
 ```text
 mlops-pytorch-pipeline/
 ├── README.md
 ├── .gitignore
+├── .dockerignore
+├── .gitattributes
 ├── .github/
 │   └── workflows/
 │       └── ci.yml
@@ -50,9 +60,43 @@ mlops-pytorch-pipeline/
 └── tests/
 │     └── test_model.py
 ├── utility/
-│   ├── logging.py
 │   └── setup.py
+```
 
+## System & Pipeline Architecture
+```plaintext
+[ Developer / Git Push ]
+          │
+          ▼
+[ GitHub Actions CI/CD ] ──(Builds)──► [ Docker Containers (train/serve) ]
+                                                      │
+                                                  (Deploys)
+                                                      ▼
+                            ┌──────────────────────────────────────────┐
+                            │            Kubernetes Cluster            │
+                            │                                          │
+                            │  [ ConfigMap ]  ──► [ Training Job ]     │
+                            │                          │               │
+                            │                     (Saves model)        │
+                            │                          ▼               │
+                            │               [ Persistent Volume ]      │
+                            │                          ▲               │
+                            │                    (Loads model)         │
+                            │                          │               │
+                            │  [ HPA ] ──► [ Serving Deployment ]      │
+                            │                      ▲                   │
+                            │                      │                   │
+                            │             [ Serving Service ]          │
+                            └──────────────────────┼───────────────────┘
+                                                   │
+                                            [ Client / User ]
+```    
+## Model Architecture
+```plaintext
+model : ResNet-18
+input : 3x32x32 pixels
+output class : "plane", "car", "bird", "cat", "deer","dog", "frog", "horse", "ship", "truck"
+Loss & Optimizer: Cross-Entropy Loss with Adam optimizer (lr = 0.001)
 ```
 
 ##  🚀 Quick Start
@@ -66,4 +110,32 @@ pip install -r requirements/train.txt
 
 # Install serving requirements
 pip install -r requirements/serve.txt
+```
+
+## Part B : PyTorch Model
+```plaintext
+So repo steup , branch creation etc..till that it was PART A. Now will be doing the Part B pytorch model training on `CIFAR-10` dataset.
+```
+
+```bash
+# 1. train the model locally.
+python src/train.py
+# output will look like below.
+{"epoch": 1, "train_loss": 1.1102, "train_accuracy": 0.6205, "val_loss": 0.8658, "val_accuracy": 0.7079}
+{"event": "checkpoint_saved", "path": "checkpoints/classifier_v1.pt"}
+# 2. start the fastapi server
+uvicorn src.serve:app --host 0.0.0.0 --port 8080 --reload
+# 3. check the health endpoint
+curl http://localhost:8080/health
+# output will come like this
+{"status":"healthy","model_loaded":true}
+# 4. check the prediction endpoint
+curl -X POST http://localhost:8080/predict -F "image=@test_horse_image.jpeg"
+# output will come like  this 
+{"filename":"test_frog_image.jpeg","prediction":"frog","confidence":1.0,"probabilities":{"airplane":0.0,"automobile":0.0,"bird":0.0,"cat":0.0,"deer":0.0,"dog":0.0,"frog":1.0,"horse":0.0,"ship":0.0,"truck":0.0}}
+```
+
+## Part C : Docker Containerization
+```plaintext
+now Part B tested successfully , let's do the Part C.
 ```
