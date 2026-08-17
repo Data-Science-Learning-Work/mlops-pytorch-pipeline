@@ -88,14 +88,23 @@ mlops-pytorch-pipeline/
                             │                      │                   │
                             │             [ Serving Service ]          │
                             └──────────────────────┼───────────────────┘
-                                                   │
+                                                   │(FastApi)
                                             [ Client / User ]
 ```    
 ## Model Architecture
 ```plaintext
 model : ResNet-18
 input : 3x32x32 pixels
-output class : "plane", "car", "bird", "cat", "deer","dog", "frog", "horse", "ship", "truck"
+output class :{"airplane",
+    "automobile",
+    "bird",
+    "cat",
+    "deer",
+    "dog",
+    "frog",
+    "horse",
+    "ship",
+    "truck"}
 Loss & Optimizer: Cross-Entropy Loss with Adam optimizer (lr = 0.001)
 ```
 
@@ -129,8 +138,8 @@ uvicorn src.serve:app --host 0.0.0.0 --port 8080 --reload
 curl http://localhost:8080/health
 # output will come like this
 {"status":"healthy","model_loaded":true}
-# 4. check the prediction endpoint
-curl -X POST http://localhost:8080/predict -F "image=@test_horse_image.jpeg"
+# 4. check the prediction endpoint , please keep the test_image.jpeg in project directory to test from local.
+curl -X POST http://localhost:8080/predict -F "image=@test_image.jpeg"
 # output will come like  this 
 {"filename":"test_frog_image.jpeg","prediction":"frog","confidence":1.0,"probabilities":{"airplane":0.0,"automobile":0.0,"bird":0.0,"cat":0.0,"deer":0.0,"dog":0.0,"frog":1.0,"horse":0.0,"ship":0.0,"truck":0.0}}
 ```
