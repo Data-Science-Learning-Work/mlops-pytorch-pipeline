@@ -168,8 +168,47 @@ curl http://localhost:8080/health
 curl -X POST http://localhost:8080/predict -F "image=@test_image.jpeg"
 
 ```
-## Part D: Kubernetes Training Job
+## Part D: Kubernetes Training Job + Part E: Kubernetes Model Serving + Part F: End-to-End Validation
 
 ```plaintext
-now Part C tested successfully , let's do the Part D. 
+now Part C tested successfully , let's do the Part D , E, F for k8s implementation.
+```
+```bash 
+# 1. Start Minikube , don't run in python env/project path , run in nomral WSL , once minikube started execute the command from step 2 from  python env/project path  becuase it need Dockerfile.train and Dockerfile.serve to rebuild the images.
+minikube start
+
+# 2. Point local Docker CLI to Minikube's Docker daemon
+eval $(minikube -p minikube docker-env)
+
+# 3. Rebuild your Docker images inside Minikube's Docker daemon
+docker build -f docker/Dockerfile.train -t mlops-train:v1 .
+docker build -f docker/Dockerfile.serve -t mlops-serve:v1 .
+```
+
+```bash 
+# Demonstrate the full workflow running on your Kubernetes cluster:
+# 1 Apply all manifests:
+kubectl apply -f k8s/namespace.yaml
+kubectl apply -f k8s/configmap.yaml
+kubectl apply -f k8s/training-job.yaml
+
+# Wait for Training to Finish...
+# Watch job progress until COMPLETIONS shows 1/1
+kubectl get job mlops-train-job -n ml-training -w
+# (Press Ctrl+C once COMPLETIONS shows 1/1).
+
+# 2 Once training completes, deploy the serving layer:
+kubectl apply -f k8s/serving-deployment.yaml
+kubectl apply -f k8s/serving-service.yaml
+kubectl apply -f k8s/hpa.yaml
+
+# 3 Verify pods are running and healthy:
+kubectl get pods -n ml-training
+kubectl describe deployment model-serving -n ml-training
+
+# 4 Test the prediction endpoint:
+# Port-forward for local testing
+kubectl port-forward svc/model-serving 8080:80 -n ml-training
+# Send a prediction request
+curl -X POST http://localhost:8080/predict -F "image=@test_image.jpeg"
 ```
