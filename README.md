@@ -205,6 +205,10 @@ kubectl apply -f k8s/training-job.yaml
 # Watch job progress until COMPLETIONS shows 1/1
 kubectl get job mlops-train-job -n ml-training -w
 # (Press Ctrl+C once COMPLETIONS shows 1/1).
+# Check Live Training Logs:
+kubectl logs -f job/mlops-train-job -n ml-training
+# Check Pod Health & Events:
+kubectl get pods -n ml-training
 
 # 2 Once training completes, deploy the serving layer:
 kubectl apply -f k8s/serving-deployment.yaml
