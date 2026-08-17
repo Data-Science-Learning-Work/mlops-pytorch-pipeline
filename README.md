@@ -137,5 +137,39 @@ curl -X POST http://localhost:8080/predict -F "image=@test_horse_image.jpeg"
 
 ## Part C : Docker Containerization
 ```plaintext
-now Part B tested successfully , let's do the Part C.
+now Part B tested successfully , let's do the Part C. 
+```
+```bash
+# verify docker daemon , docker is running fine :
+docker info
+# 1.Build and test the training image:
+# Build image
+docker build -f docker/Dockerfile.train -t mlops-train:v1 .
+# Run training with mounted volumes
+docker run --rm \
+  -v $(pwd)/data:/app/data \
+  -v $(pwd)/checkpoints:/app/checkpoints \
+  mlops-train:v1
+
+#2.build and test the serving image
+# Build image
+docker build -f docker/Dockerfile.serve -t mlops-serve:v1 .
+
+# Run serving container
+docker run -d --rm -p 8080:8080 \
+  --name serve-container \
+  -v $(pwd)/checkpoints:/app/checkpoints \
+  mlops-serve:v1
+
+#3.Test prediction endpoint
+# Check health
+curl http://localhost:8080/health
+# Send test image for prediction
+curl -X POST http://localhost:8080/predict -F "image=@test_image.jpeg"
+
+```
+## Part D: Kubernetes Training Job
+
+```plaintext
+now Part C tested successfully , let's do the Part D. 
 ```
