@@ -2,11 +2,12 @@ import io
 import os
 from pathlib import Path
 import torch
+import torchvision.transforms as transforms
 import torch.nn as nn
 from fastapi import FastAPI, File, HTTPException, UploadFile, status
 from PIL import Image
-from dataset import get_transforms
-from model import get_model
+from src.dataset import get_transforms
+from src.model import get_model
 
 app = FastAPI(title="CIFAR-10 Image Classification API")
 
@@ -17,10 +18,26 @@ transform = get_transforms(train=False)
 
 # CIFAR-10 Class Labels
 CLASSES = (
-    "plane", "car", "bird", "cat", "deer",
-    "dog", "frog", "horse", "ship", "truck"
+    "airplane",
+    "automobile",
+    "bird",
+    "cat",
+    "deer",
+    "dog",
+    "frog",
+    "horse",
+    "ship",
+    "truck"
 )
 
+def get_inference_transform():
+    return transforms.Compose([
+        transforms.Resize((32, 32)),
+        transforms.ToTensor(),
+        transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+    ])
+
+transform = get_inference_transform()
 
 def load_model_checkpoint():
     global model

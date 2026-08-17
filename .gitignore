@@ -220,3 +220,6 @@ __marimo__/
 
 # project specific
 logs/
+data/
+checkpoints/
+*.jpeg
