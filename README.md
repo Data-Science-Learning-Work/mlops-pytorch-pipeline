@@ -209,6 +209,7 @@ kubectl get job mlops-train-job -n ml-training -w
 kubectl logs -f job/mlops-train-job -n ml-training
 # Check Pod Health & Events:
 kubectl get pods -n ml-training
+# once succesfully finsihes then move to setp 2 below.
 
 # 2 Once training completes, deploy the serving layer:
 kubectl apply -f k8s/serving-deployment.yaml
@@ -224,4 +225,10 @@ kubectl describe deployment model-serving -n ml-training
 kubectl port-forward svc/model-serving 8080:80 -n ml-training
 # Send a prediction request
 curl -X POST http://localhost:8080/predict -F "image=@test_image.jpeg"
+
+# 5. if issue come port 8080 is used and  Unable to listen on port 8080 then try below one
+
+kubectl port-forward svc/model-serving 8081:80 -n ml-training
+# Send a prediction request
+curl -X POST http://localhost:8081/predict -F "image=@test_image.jpeg"
 ```
