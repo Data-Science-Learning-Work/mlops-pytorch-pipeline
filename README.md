@@ -209,7 +209,7 @@ kubectl get job mlops-train-job -n ml-training -w
 kubectl logs -f job/mlops-train-job -n ml-training
 # Check Pod Health & Events:
 kubectl get pods -n ml-training
-# once succesfully finsihes then move to setp 2 below.
+# once succesfully finishes then move to setp 2 below.
 
 # 2 Once training completes, deploy the serving layer:
 kubectl apply -f k8s/serving-deployment.yaml
